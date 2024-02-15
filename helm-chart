@@ -1,0 +1,104 @@
+A Helm chart is a collection of files that describes a set of Kubernetes resources. Helm is a package manager for Kubernetes that simplifies the process of deploying and managing applications on a Kubernetes cluster. A Helm chart typically includes templates for Kubernetes manifests (such as Deployment, Service, ConfigMap, etc.), as well as values files, which allow users to customize the configuration of the deployed resources.
+
+Here are some key components of a Helm chart:
+
+Chart.yaml: This file contains metadata about the chart, such as its name, version, description, and maintainers.
+
+values.yaml: This file contains default configuration values for the chart. Users can override these values by providing their own values file or by specifying values directly when installing the chart.
+
+Templates: These are the Kubernetes manifest files (e.g., YAML files) that define the resources to be deployed. Helm uses Go templates to allow for dynamic generation of these files, which enables parameterization and customization.
+
+Helpers: Helm supports the use of helper functions and partial templates to streamline the chart development process. These helpers can be used to generate Kubernetes object metadata, manage dependencies, or perform other tasks.
+
+Dependencies: Helm charts can depend on other charts, allowing for modular application deployment. Dependencies are typically declared in a requirements.yaml file, and Helm can automatically fetch and install these dependencies when installing the chart.
+
+Helm charts provide a convenient way to package, version, and distribute Kubernetes applications. They abstract away the complexity of managing Kubernetes resources manually and enable users to deploy applications consistently across different environments. Helm charts are widely used in the Kubernetes ecosystem and are available for many popular applications and services.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+In the context of Kubernetes, resources refer to the entities that Kubernetes manages to deploy, scale, and maintain applications. These resources represent different aspects of an application's infrastructure and functionality. Here are some common Kubernetes resources along with examples:
+
+Pod: A Pod is the smallest deployable unit in Kubernetes, representing one or more containers that share resources such as storage and network. For example, a Pod might contain a web server container and a sidecar container for logging.
+
+Deployment: A Deployment manages a set of identical Pods, ensuring that a specified number of them are running at any given time. It also enables rolling updates and rollbacks to the application. For example, a Deployment might manage a set of web server Pods for a web application.
+
+Service: A Service defines a logical set of Pods and a policy by which to access them. It provides a stable endpoint for accessing the application, enabling load balancing and service discovery. For example, a Service might expose the web server Pods to external traffic.
+
+ConfigMap: A ConfigMap allows you to decouple configuration artifacts from image content to keep containerized applications portable. For example, you can use a ConfigMap to store environment variables or configuration files that are consumed by Pods.
+
+Secret: A Secret stores sensitive data such as passwords, OAuth tokens, and SSH keys. It ensures that sensitive information is kept secure and is only accessible to authorized applications and users.
+
+PersistentVolume (PV) and PersistentVolumeClaim (PVC)**: These resources enable the persistent storage of data in Kubernetes. A PersistentVolume represents a piece of storage in the cluster, while a PersistentVolumeClaim is a request for storage by a Pod.
+
+Namespace: A Namespace provides a way to logically divide cluster resources among multiple users or teams. It allows for better organization and isolation of resources within a Kubernetes cluster.
+
+These are just a few examples of Kubernetes resources. Kubernetes provides many other resources for managing networking, scheduling, monitoring, and more. Helm charts describe these resources and their configurations in a structured way, making it easier to deploy and manage complex applications on Kubernetes.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The keywords you mentioned, such as db, istio, test, jvm, ingress, deployment, service, etc., are not standard keywords defined by Helm or Kubernetes themselves. Instead, they are specific to the Helm chart you're working with.
+
+In Helm, the values.yaml file serves as a template for configuring your Kubernetes resources and other settings within your application deployment. The structure of the values.yaml file, including the keywords used, is defined by the author of the Helm chart.
+
+Each Helm chart is designed to deploy a specific application or set of applications, and the values.yaml file for that chart will contain configuration options relevant to that application or set of applications. The keywords used in the values.yaml file are chosen by the chart author to reflect the components, settings, and configurations relevant to the application being deployed.
+
+For example:
+
+db: This might be used to configure parameters related to a database used by the application.
+istio: This might be used to configure Istio-specific settings for applications that are deployed with Istio service mesh.
+test: This might be used to configure settings related to testing, such as enabling or disabling tests during deployment.
+jvm: This might be used to configure JVM options for Java applications.
+In summary, the keywords in the values.yaml file are specific to the Helm chart you're using, and they are defined by the chart author based on the requirements and configuration options of the application being deployed.
+
+Kubernetes itself doesn't directly interpret the values.yaml file used in Helm charts. Instead, Helm acts as an intermediary between Kubernetes and the user-defined values in the values.yaml file.
+
+Here's how it works:
+
+Helm Templating: Helm allows users to define templates for Kubernetes resource manifests (such as Deployment, Service, ConfigMap, etc.) within the Helm chart. These templates can contain placeholders or variables that are substituted with values from the values.yaml file during deployment.
+
+Values Injection: When deploying a Helm chart, Helm reads the values.yaml file and injects the values into the corresponding templates, replacing the placeholders with the actual values provided by the user.
+
+Kubernetes Resource Creation: Helm generates Kubernetes resource manifests based on the templated files with substituted values and then sends these manifests to the Kubernetes API server for creation.
+
+Kubernetes Interpretation: Kubernetes interprets these manifests as it would any other YAML or JSON configuration file, creating the specified resources (Deployments, Services, etc.) within the Kubernetes cluster according to the definitions provided.
+
+In summary, Kubernetes itself does not directly understand or interpret the values.yaml file. Instead, Helm uses the values.yaml file to generate Kubernetes resource manifests with the appropriate configurations, which are then submitted to the Kubernetes API server for deployment.
+
+Here's an example of a Kubernetes resource manifest for a Deployment:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example
+  template:
+    metadata:
+      labels:
+        app: example
+    spec:
+      containers:
+      - name: example-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+
+Let's break down the components of this manifest:
+
+apiVersion: Specifies the API version of the Kubernetes resource being defined. In this case, it's apps/v1, indicating the version of the Deployment API.
+kind: Specifies the type of Kubernetes resource being defined. Here, it's Deployment.
+metadata: Contains metadata about the resource, such as its name.
+spec: Defines the desired state for the resource.
+replicas: Specifies the desired number of replicas (instances) of the Pods managed by this Deployment. In this case, it's set to 3.
+selector: Specifies how the Deployment selects which Pods to manage. Here, it's using a label selector to match Pods with the label app: example.
+template: Defines the Pod template used to create new Pods managed by the Deployment.
+metadata: Contains metadata for the Pods created from this template.
+spec: Defines the specification for the containers running in the Pods.
+containers: Specifies the containers to run in the Pods.
+name: Specifies the name of the container.
+image: Specifies the Docker image to use for the container.
+ports: Specifies the ports to expose on the container. Here, it's exposing port 80.
+This manifest describes a Deployment named example-deployment that manages three replicas of a Pod running a container based on the nginx:latest Docker image, exposing port 80.
