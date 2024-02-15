@@ -1,0 +1,78 @@
+replicas: This field specifies the desired number of replicas (instances) of the Pods managed by this Deployment. In this case, it's set to 3, indicating that you want to maintain three replicas of your application running concurrently.
+
+
+
+progressDeadlineSeconds: This field specifies the maximum amount of time in seconds that the Deployment controller should wait for the Deployment to make progress before considering it as failed. In this case, it's set to 300 seconds (which is 5 minutes). If the Deployment does not make progress within this timeframe, it will be considered as failed, and Kubernetes may take further action, such as rolling back the Deployment or marking it as unsuccessful.
+
+
+
+name: {{.Values.service.name}}
+name: This field specifies the name of the Deployment resource. In Kubernetes, every resource must have a unique name within its namespace. Here, instead of hardcoding a specific name, the name is being templated using Helm's templating syntax {{ ... }}.
+
+{{.Values.service.name}}: This is a Helm template expression that references a value defined in the values.yaml file of your Helm chart. Specifically, it's referencing the value associated with the key service.name under the values section.
+
+The .Values part refers to the top-level values object in your values.yaml file.
+service.name specifies the path to the specific value you want to access within the values object.
+By using this templated approach, you can dynamically set the name of the Deployment resource based on the value provided in the values.yaml file when installing or upgrading the Helm chart. This allows for greater flexibility and reusability of the Helm chart across different environments or use cases.
+
+
+
+annotations: Annotations are key-value pairs that provide additional information about objects in Kubernetes. They are often used for metadata, monitoring, or debugging purposes. In your example:
+
+abc.certificate.tls/active: "false": This annotation indicates whether a TLS certificate issued by the abc certificate authority is active. In this case, it's set to "false", indicating that the TLS certificate is not active.
+pca.grp.tls/active: "true": This annotation indicates whether a TLS certificate issued by the pca certificate authority for the grp group is active. It's set to "true", indicating that the TLS certificate is active.
+
+
+
+labels: Labels are key-value pairs attached to objects in Kubernetes. They are used to identify and select objects and to organize resources. Labels can be used for various purposes, including grouping, filtering, and selecting objects for operations. In your example:
+
+{{-with .Values}} ... {{end}}: This is a Helm template control structure that executes the enclosed block of code only if the .Values object is not empty. It's a way to conditionally include content based on the presence of values in the values.yaml file.
+{{-include "grp-labels.labels" . | nindent 4}}: This line includes another template file named grp-labels.labels and passes the .Values object to it. The | nindent 4 part is used to indent the included content by four spaces. This is often done for readability and consistency in YAML files.
+The grp-labels.labels file likely contains a set of labels defined as key-value pairs. By including this file in the labels section of your deployment.yaml template, you are dynamically setting labels on the Deployment based on the values defined in the grp-labels.labels template file.
+
+
+
+serviceAccountName:In Kubernetes, a Service Account is an identity used by Pods to authenticate with the Kubernetes API server and to access cluster resources. It's a way to provide an identity to processes running within Pods, allowing them to interact securely with the Kubernetes API and other resources in the cluster.
+
+Here's what you need to know about Service Accounts:
+
+Identity: A Service Account provides an identity for Pods. Each Pod can be associated with a specific Service Account, which determines the permissions and access rights of the Pod within the Kubernetes cluster.
+
+Authentication: Service Accounts authenticate with the Kubernetes API server using tokens. When a Pod is associated with a Service Account, it receives a token that it can use to authenticate and access resources within the cluster.
+
+Authorization: Service Accounts are subject to Kubernetes Role-Based Access Control (RBAC) policies, which determine what actions they are allowed to perform and what resources they can access within the cluster.
+
+Default Service Account: Every namespace in Kubernetes has a default Service Account named default. If a Pod does not specify a Service Account, it automatically uses the default Service Account.
+
+Custom Service Accounts: In addition to the default Service Account, you can create custom Service Accounts with specific permissions and roles tailored to the needs of your applications.
+
+The serviceAccountName field in your deployment.yaml template specifies the name of the Service Account that the Pods managed by the Deployment should use. By associating Pods with specific Service Accounts, you can control the permissions and access rights of those Pods within the Kubernetes cluster.
+
+
+
+strategy: This field specifies the deployment strategy for updating the Pods managed by the Deployment. In your example:
+
+type: RollingUpdate: This indicates that updates to the Pods will be performed gradually, ensuring that a certain number of new Pods are created before old Pods are terminated. This helps to maintain application availability during the update process.
+rollingUpdate: This sub-field further specifies parameters for the rolling update strategy.
+maxSurge: 100%: This indicates that during a rolling update, Kubernetes can create additional Pods up to double the desired number of Pods. This allows for faster rollout of updates by temporarily increasing the number of Pods beyond the desired replica count.
+
+
+
+template: This field defines the Pod template used by the Deployment to create new Pods. It specifies the configuration for the Pods managed by the Deployment. In your example:
+
+spec: This specifies the desired state of the Pod template.
+serviceAccountName: This field specifies the name of the service account to use for the Pods. It's templated using Helm's templating syntax to reference the value of .Values.service.name from the values.yaml file.
+containers: This field specifies the containers to run within the Pods.
+name: This specifies the name of the container.
+image: This specifies the Docker image to use for the container. In this case, it's set to nginx:latest.
+imagePullPolicy: This specifies the policy for pulling the container image. It's set to Always, meaning Kubernetes will always attempt to pull the latest version of the image.
+securityContext: This field specifies security-related settings for the container.
+capabilities: This field specifies Linux capabilities for the container.
+drop: This specifies a list of Linux capabilities to drop. In this case, it's set to ALL, meaning all capabilities are dropped.
+ports: This field specifies the ports to expose on the container.
+name: This specifies the name of the port.
+containerPort: This specifies the port number inside the container.
+protocol: This specifies the protocol used by the port (e.g., TCP or UDP).
+env: This field specifies environment variables to set in the container.
+name: This specifies the name of the environment variable.
+value: This specifies the value of the environment variable. In this case, it's set to "8080" for the SERVER_PORT environment variable.
