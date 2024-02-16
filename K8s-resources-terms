@@ -76,3 +76,35 @@ protocol: This specifies the protocol used by the port (e.g., TCP or UDP).
 env: This field specifies environment variables to set in the container.
 name: This specifies the name of the environment variable.
 value: This specifies the value of the environment variable. In this case, it's set to "8080" for the SERVER_PORT environment variable.
+
+
+
+affinity: Affinity and anti-affinity are Kubernetes features that allow you to influence the scheduling of Pods onto nodes in the cluster. They enable you to specify rules for how Pods should be distributed across nodes based on various criteria.
+
+podAntiAffinity: This field specifies anti-affinity rules for the Pods managed by the Deployment.
+
+requiredDuringSchedulingIgnoredDuringExecution: This field specifies anti-affinity rules that must be satisfied during Pod scheduling but are ignored during Pod execution.
+
+labelSelector: This field specifies a label selector that identifies other Pods to which the anti-affinity rule applies. In your example:
+
+matchLabels: This sub-field specifies the labels that must match for Pods to be considered as candidates for anti-affinity.
+app.kubernetes.io/name: {{ .Values.service.name | quote }}: This is a Helm template expression that references the value of .Values.service.name from the values.yaml file. The | quote part ensures that the value is properly quoted.
+
+topologyKey: This field specifies the topology key to use for the anti-affinity rule. It determines the level at which the anti-affinity rule should be enforced. In your example, it's set to kubernetes.io/hostname, meaning that the anti-affinity rule is enforced at the level of individual nodes based on their hostnames.
+
+In summary, the affinity section in your deployment.yaml template specifies anti-affinity rules for the Pods managed by the Deployment. These rules ensure that Pods with the same label (app.kubernetes.io/name) are not scheduled on the same node (kubernetes.io/hostname), helping to improve fault tolerance and resilience by spreading workload across multiple nodes in the cluster.
+
+In Kubernetes, anti-affinity refers to a scheduling preference that specifies how Pods should avoid being co-located (scheduled on the same node) with certain other Pods. It's a way to spread out or distribute workload across multiple nodes in the cluster to improve fault tolerance, resilience, and performance.
+
+There are two types of anti-affinity in Kubernetes:
+
+Inter-Pod Anti-Affinity: This type of anti-affinity specifies rules for how Pods of the same application or service should avoid being scheduled on the same node. It's commonly used to prevent multiple instances of the same application from running on the same node to minimize the impact of node failures.
+
+Node Anti-Affinity: This type of anti-affinity specifies rules for how Pods should avoid being scheduled on nodes that already have certain other Pods running on them. It's commonly used to spread out or distribute workload across multiple nodes in the cluster to balance resource utilization and avoid overloading individual nodes.
+
+Anti-affinity rules are specified using label selectors and topology keys. They allow you to define criteria based on Pod labels and node attributes (such as hostname or zone) to determine how Pods should be scheduled across nodes in the cluster.
+
+By using anti-affinity rules, you can improve the reliability and availability of your applications by ensuring that they are spread out across multiple nodes in the cluster. This helps minimize the impact of node failures and improves the overall resilience of your Kubernetes deployments.
+
+
+
